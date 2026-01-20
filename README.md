@@ -1,4 +1,4 @@
-# Dream Reverb
+# DreamReverb
 
 
 A small CLI that generates slow, reverbed versions of music. It applies a low‑pass filter, distance gain, delay, reverb, tremolo, and then slows the audio down. Output is MP3 by default (highest quality), with a WAV flag for lossless.
@@ -6,17 +6,8 @@ A small CLI that generates slow, reverbed versions of music. It applies a low‑
 ## Requirements
 
 - Python 3.12+
-- `uv`
 
 ## Setup
-
-```bash
-uv venv .venv --python 3.12
-source .venv/bin/activate
-uv pip install -r requirements.txt
-```
-
-Non-uv setup:
 
 ```bash
 python3.12 -m venv .venv
@@ -27,7 +18,7 @@ python -m pip install -r requirements.txt
 ## Run
 
 ```bash
-uv run python main.py
+python main.py
 ```
 
 ## Options
