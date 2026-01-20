@@ -1,12 +1,10 @@
 # Dream Reverb
 
-```
     ____                            ____                      __  
    / __ \________  ____ _____ ___  / __ \___ _   _____  _____/ /_ 
   / / / / ___/ _ \/ __ `/ __ `__ \/ /_/ / _ \ | / / _ \/ ___/ __ \
  / /_/ / /  /  __/ /_/ / / / / / / _, _/  __/ |/ /  __/ /  / /_/ /
 /_____/_/   \___/\__,_/_/ /_/ /_/_/ |_|\___/|___/\___/_/  /_.___/ 
-```
 
 A small CLI that generates slow, reverbed versions of music. It applies a low‑pass filter, distance gain, delay, reverb, tremolo, and then slows the audio down. Output is MP3 by default (highest quality), with a WAV flag for lossless.
 
