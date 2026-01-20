@@ -17,11 +17,11 @@ from rich.progress import (
 )
 
 _BANNER = r"""
-   _____ __                 ____                      __  
-  / ___// /___ _      __   / __ \___ _   _____  _____/ /_ 
-  \__ \/ / __ \ | /| / /  / /_/ / _ \ | / / _ \/ ___/ __ \
- ___/ / / /_/ / |/ |/ /  / _, _/  __/ |/ /  __/ /  / /_/ /
-/____/_/\____/|__/|__/  /_/ |_|\___/|___/\___/_/  /_.___/ 
+    ____                            ____                      __  
+   / __ \________  ____ _____ ___  / __ \___ _   _____  _____/ /_ 
+  / / / / ___/ _ \/ __ `/ __ `__ \/ /_/ / _ \ | / / _ \/ ___/ __ \
+ / /_/ / /  /  __/ /_/ / / / / / / _, _/  __/ |/ /  __/ /  / /_/ /
+/_____/_/   \___/\__,_/_/ /_/ /_/_/ |_|\___/|___/\___/_/  /_.___/ 
 """
 
 _LOFI_NIGHT = {
@@ -87,8 +87,8 @@ def main(
     fast: bool,
 ) -> None:
     console = Console()
-    console.print(_BANNER, style="bold magenta")
-    console.print("[bold cyan]Lo-Fi Night[/bold cyan] — Muffled, soft, and a touch distant")
+    console.print(_BANNER, style="bold plum2")
+    console.print()
 
     in_path = input_path.expanduser().resolve()
     if output_path is not None:
@@ -118,10 +118,10 @@ def main(
         speed = 0.85
 
     with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("{task.completed}/{task.total}"),
+        SpinnerColumn(style="plum2"),
+        TextColumn("[progress.description]{task.description}", style="light_cyan3"),
+        BarColumn(style="grey39", complete_style="bright_yellow"),
+        TextColumn("{task.completed}/{task.total}", style="bright_yellow"),
         TimeElapsedColumn(),
         console=console,
     ) as progress:
@@ -165,7 +165,7 @@ def main(
             out_f.write(slowed)
         progress.update(task, advance=1, description="Done")
 
-    console.print(f"Wrote: [bold cyan]{out_path}[/bold cyan]")
+    console.print(f"Wrote: [bold pale_turquoise1]{out_path}[/bold pale_turquoise1]")
 
 
 if __name__ == "__main__":
