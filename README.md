@@ -60,3 +60,4 @@ python main.py --output /path/to/out.wav
 
 - Pitch is preserved by default; use `--pitch up/down` to shift by 1/3 octave.
 - Output file is written next to the input as `<stem>_reverb_slow.(mp3|wav)` unless `--output` is provided.
+# DreamReverb
