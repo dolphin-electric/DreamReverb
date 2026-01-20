@@ -29,6 +29,8 @@ python main.py --pitch down
 python main.py --extra-slow
 python main.py --fast
 python main.py --wav
+python main.py --output /path/to/out.mp3
+python main.py --output /path/to/out.wav
 ```
 
 ## What it does
@@ -44,8 +46,9 @@ python main.py --wav
 
 - Default: MP3 at quality 320 kbps
 - Lossless: `--wav`
+- Custom: `--output` to choose a full path (must end with .mp3 or .wav)
 
 ## Notes
 
 - Pitch is preserved by default; use `--pitch up/down` to shift by 1/3 octave.
-- Output file is written next to the input as `<stem>_reverb_slow.(mp3|wav)`.
+- Output file is written next to the input as `<stem>_reverb_slow.(mp3|wav)` unless `--output` is provided.

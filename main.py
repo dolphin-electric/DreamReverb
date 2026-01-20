@@ -63,6 +63,12 @@ def _apply_tremolo(audio: np.ndarray, samplerate: float, rate_hz: float, depth: 
     help="Write WAV (lossless) instead of MP3.",
 )
 @click.option(
+    "--output",
+    "output_path",
+    type=click.Path(dir_okay=False, path_type=Path),
+    help="Custom output file path (overrides default name).",
+)
+@click.option(
     "--extra-slow",
     is_flag=True,
     help="Slow down more than the default.",
@@ -72,14 +78,31 @@ def _apply_tremolo(audio: np.ndarray, samplerate: float, rate_hz: float, depth: 
     is_flag=True,
     help="Speed up compared to the default.",
 )
-def main(input_path: Path, pitch: str, wav: bool, extra_slow: bool, fast: bool) -> None:
+def main(
+    input_path: Path,
+    pitch: str,
+    wav: bool,
+    output_path: Path | None,
+    extra_slow: bool,
+    fast: bool,
+) -> None:
     console = Console()
     console.print(_BANNER, style="bold magenta")
     console.print("[bold cyan]Lo-Fi Night[/bold cyan] — Muffled, soft, and a touch distant")
 
     in_path = input_path.expanduser().resolve()
-    ext = "wav" if wav else "mp3"
-    out_path = in_path.with_name(f"{in_path.stem}_reverb_slow.{ext}")
+    if output_path is not None:
+        out_path = output_path.expanduser().resolve()
+        ext = out_path.suffix.lower().lstrip(".")
+        if ext == "wav":
+            wav = True
+        elif ext == "mp3":
+            wav = False
+        else:
+            raise click.ClickException("Output file must end with .mp3 or .wav")
+    else:
+        ext = "wav" if wav else "mp3"
+        out_path = in_path.with_name(f"{in_path.stem}_reverb_slow.{ext}")
 
     reverb = Reverb(**_LOFI_NIGHT["reverb"])
     delay = Delay(**_LOFI_NIGHT["delay"])
