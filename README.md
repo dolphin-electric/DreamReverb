@@ -1,6 +1,5 @@
 # DreamReverb
 
-
 A small CLI that generates slow, reverbed versions of music. It applies a low‑pass filter, distance gain, delay, reverb, tremolo, and then slows the audio down. Output is MP3 by default (highest quality), with a WAV flag for lossless.
 
 ## Requirements
@@ -29,8 +28,7 @@ python main.py --pitch down
 python main.py --extra-slow
 python main.py --fast
 python main.py --wav
-python main.py --output /path/to/out.mp3
-python main.py --output /path/to/out.wav
+python main.py --output /path/to/folder
 ```
 
 ## What it does
@@ -46,10 +44,9 @@ python main.py --output /path/to/out.wav
 
 - Default: MP3 at quality 320 kbps
 - Lossless: `--wav`
-- Custom: `--output` to choose a full path (must end with .mp3 or .wav)
+- Custom folder: `--output` writes to that directory with the default filename
 
 ## Notes
 
 - Pitch is preserved by default; use `--pitch up/down` to shift by 1/3 octave.
-- Output file is written next to the input as `<stem>_reverb_slow.(mp3|wav)` unless `--output` is provided.
-# DreamReverb
+- Output file is written as `<stem>_reverb_slow.(mp3|wav)` in the input folder unless `--output` is provided.

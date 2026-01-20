@@ -64,9 +64,9 @@ def _apply_tremolo(audio: np.ndarray, samplerate: float, rate_hz: float, depth: 
 )
 @click.option(
     "--output",
-    "output_path",
-    type=click.Path(dir_okay=False, path_type=Path),
-    help="Custom output file path (overrides default name).",
+    "output_dir",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Output folder for the processed file.",
 )
 @click.option(
     "--extra-slow",
@@ -82,7 +82,7 @@ def main(
     input_path: Path | None,
     pitch: str,
     wav: bool,
-    output_path: Path | None,
+    output_dir: Path | None,
     extra_slow: bool,
     fast: bool,
 ) -> None:
@@ -97,17 +97,11 @@ def main(
         )
 
     in_path = input_path.expanduser().resolve()
-    if output_path is not None:
-        out_path = output_path.expanduser().resolve()
-        ext = out_path.suffix.lower().lstrip(".")
-        if ext == "wav":
-            wav = True
-        elif ext == "mp3":
-            wav = False
-        else:
-            raise click.ClickException("Output file must end with .mp3 or .wav")
+    ext = "wav" if wav else "mp3"
+    if output_dir is not None:
+        output_dir = output_dir.expanduser().resolve()
+        out_path = output_dir / f"{in_path.stem}_reverb_slow.{ext}"
     else:
-        ext = "wav" if wav else "mp3"
         out_path = in_path.with_name(f"{in_path.stem}_reverb_slow.{ext}")
 
     reverb = Reverb(**_LOFI_NIGHT["reverb"])
