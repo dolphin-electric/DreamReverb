@@ -12,7 +12,7 @@ A small CLI that makes audio feel like a distant, muffled party while you try to
 ```bash
 uv venv .venv
 source .venv/bin/activate
-uv pip install pedalboard rich click numpy
+uv pip install -r requirements.txt
 ```
 
 ## Run
