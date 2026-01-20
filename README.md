@@ -1,0 +1,51 @@
+# Reverb Sleep Machine
+
+A small CLI that makes audio feel like a distant, muffled party while you try to sleep. It applies a low‑pass filter, distance gain, delay, reverb, tremolo, and then slows the audio down. Output is MP3 by default (highest quality), with a WAV flag for lossless.
+
+## Requirements
+
+- Python 3.12+
+- `uv`
+
+## Setup
+
+```bash
+uv venv .venv
+source .venv/bin/activate
+uv pip install pedalboard rich click numpy
+```
+
+## Run
+
+```bash
+python main.py
+```
+
+## Options
+
+```bash
+python main.py --pitch up
+python main.py --pitch down
+python main.py --extra-slow
+python main.py --fast
+python main.py --wav
+```
+
+## What it does
+
+- Low‑pass filter (muffle highs)
+- Gain reduction (distance)
+- Delay + reverb (space)
+- Tremolo (soft motion)
+- Time‑stretch (slowdown)
+- Optional pitch shift (+/- 4 semitones)
+
+## Output
+
+- Default: MP3 at quality 320 kbps
+- Lossless: `--wav`
+
+## Notes
+
+- Pitch is preserved by default; use `--pitch up/down` to shift by 1/3 octave.
+- Output file is written next to the input as `<stem>_reverb_slow.(mp3|wav)`.
