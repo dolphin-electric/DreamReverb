@@ -48,7 +48,7 @@ def _apply_tremolo(audio: np.ndarray, samplerate: float, rate_hz: float, depth: 
     "--input-path",
     "input_path",
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
-    prompt="Enter path to audio file",
+    help="Path to the input audio file.",
 )
 @click.option(
     "--pitch",
@@ -79,7 +79,7 @@ def _apply_tremolo(audio: np.ndarray, samplerate: float, rate_hz: float, depth: 
     help="Speed up compared to the default.",
 )
 def main(
-    input_path: Path,
+    input_path: Path | None,
     pitch: str,
     wav: bool,
     output_path: Path | None,
@@ -89,6 +89,12 @@ def main(
     console = Console()
     console.print(_BANNER, style="bold plum2")
     console.print()
+
+    if input_path is None:
+        input_path = click.prompt(
+            "Enter path to audio file",
+            type=click.Path(exists=True, dir_okay=False, path_type=Path),
+        )
 
     in_path = input_path.expanduser().resolve()
     if output_path is not None:

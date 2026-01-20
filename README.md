@@ -11,15 +11,23 @@ A small CLI that generates slow, reverbed versions of music. It applies a low‑
 ## Setup
 
 ```bash
-uv venv .venv
+uv venv .venv --python 3.12
 source .venv/bin/activate
 uv pip install -r requirements.txt
+```
+
+Non-uv setup:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
 ## Run
 
 ```bash
-python main.py
+uv run python main.py
 ```
 
 ## Options
