@@ -4,7 +4,7 @@ from pathlib import Path
 
 import click
 import numpy as np
-from pedalboard import Delay, Gain, LowpassFilter, Pedalboard, Reverb
+from pedalboard import Compressor, Delay, Gain, Limiter, LowpassFilter, Pedalboard, Reverb
 from pedalboard.io import AudioFile
 from pedalboard_native.utils import time_stretch
 from rich.console import Console
@@ -78,6 +78,11 @@ def _apply_tremolo(audio: np.ndarray, samplerate: float, rate_hz: float, depth: 
     is_flag=True,
     help="Speed up compared to the default.",
 )
+@click.option(
+    "--secret",
+    is_flag=True,
+    help="Run the full effect chain 4 times.",
+)
 def main(
     input_path: Path | None,
     pitch: str,
@@ -85,6 +90,7 @@ def main(
     output_dir: Path | None,
     extra_slow: bool,
     fast: bool,
+    secret: bool,
 ) -> None:
     console = Console()
     console.print(_BANNER, style="bold plum2")
@@ -117,6 +123,9 @@ def main(
     elif fast:
         speed = 0.85
 
+    passes = 3 if secret else 1
+    total_steps = 3 + passes * 2
+
     with Progress(
         SpinnerColumn(style="plum2"),
         TextColumn("[progress.description]{task.description}", style="light_cyan3"),
@@ -125,30 +134,55 @@ def main(
         TimeElapsedColumn(),
         console=console,
     ) as progress:
-        task = progress.add_task("Reading audio", total=4)
+        task = progress.add_task("Reading audio", total=total_steps)
 
         with AudioFile(str(in_path)) as f:
             audio = f.read(f.frames)
             samplerate = f.samplerate
             num_channels = f.num_channels
-        progress.update(task, advance=1, description="Applying effects")
+        processed = audio
+        for pass_index in range(1, passes + 1):
+            progress.update(
+                task,
+                advance=0,
+                description=f"Applying effects (pass {pass_index}/{passes})",
+            )
+            processed = board.process(processed, samplerate)
+            processed = _apply_tremolo(processed, samplerate, **_LOFI_NIGHT["tremolo"])
+            progress.update(task, advance=1, description=f"Time stretching (pass {pass_index}/{passes})")
 
-        processed = board.process(audio, samplerate)
-        processed = _apply_tremolo(processed, samplerate, **_LOFI_NIGHT["tremolo"])
-        progress.update(task, advance=1, description="Time stretching")
+            semitones = 0
+            if pitch == "up":
+                semitones = 4
+            elif pitch == "down":
+                semitones = -4
 
-        semitones = 0
-        if pitch == "up":
-            semitones = 4
-        elif pitch == "down":
-            semitones = -4
+            processed = time_stretch(
+                processed,
+                samplerate,
+                stretch_factor=speed,
+                pitch_shift_in_semitones=semitones,
+            )
+            progress.update(task, advance=1)
 
-        slowed = time_stretch(
-            processed,
-            samplerate,
-            stretch_factor=speed,
-            pitch_shift_in_semitones=semitones,
+        progress.update(task, advance=0, description="Mastering")
+        master = Pedalboard(
+            [
+                Gain(gain_db=0.5),
+                Compressor(threshold_db=-22.0, ratio=3.0, attack_ms=5.0, release_ms=80.0),
+                Limiter(threshold_db=-1.0, release_ms=80.0),
+            ]
         )
+        processed = master.process(processed, samplerate)
+        progress.update(task, advance=1, description="Final limiting")
+
+        finalizer = Pedalboard(
+            [
+                Gain(gain_db=0.0),
+                Limiter(threshold_db=-1.0, release_ms=80.0),
+            ]
+        )
+        processed = finalizer.process(processed, samplerate)
         progress.update(task, advance=1, description="Writing output")
 
         audiofile_kwargs = {}
@@ -162,7 +196,7 @@ def main(
             num_channels=num_channels,
             **audiofile_kwargs,
         ) as out_f:
-            out_f.write(slowed)
+            out_f.write(processed)
         progress.update(task, advance=1, description="Done")
 
     console.print(f"Wrote: [bold pale_turquoise1]{out_path}[/bold pale_turquoise1]")

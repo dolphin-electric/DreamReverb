@@ -27,6 +27,7 @@ python main.py --pitch up
 python main.py --pitch down
 python main.py --extra-slow
 python main.py --fast
+python main.py --secret
 python main.py --wav
 python main.py --output /path/to/folder
 ```
@@ -39,6 +40,7 @@ python main.py --output /path/to/folder
 - Tremolo (soft motion)
 - Time‑stretch (slowdown)
 - Optional pitch shift (+/- 4 semitones)
+- Always‑on mastering tuned for ~‑14 LUFS output
 
 ## Output
 
@@ -50,3 +52,4 @@ python main.py --output /path/to/folder
 
 - Pitch is preserved by default; use `--pitch up/down` to shift by 1/3 octave.
 - Output file is written as `<stem>_reverb_slow.(mp3|wav)` in the input folder unless `--output` is provided.
+- `--secret` repeats the full effect chain 3 times.
