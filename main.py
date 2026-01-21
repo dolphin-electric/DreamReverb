@@ -43,6 +43,15 @@ def _apply_tremolo(audio: np.ndarray, samplerate: float, rate_hz: float, depth: 
     return audio * lfo
 
 
+def _auto_gain_db(audio: np.ndarray, target_rms_db: float = -14.0, max_boost_db: float = 12.0) -> float:
+    rms = float(np.sqrt(np.mean(np.square(audio))))
+    if rms <= 0.0:
+        return 0.0
+    rms_db = 20.0 * np.log10(rms)
+    gain_db = target_rms_db - rms_db
+    return float(np.clip(gain_db, -12.0, max_boost_db))
+
+
 @click.command()
 @click.option(
     "--input-path",
@@ -94,6 +103,9 @@ def main(
 ) -> None:
     console = Console()
     console.print(_BANNER, style="bold plum2")
+    console.print()
+
+    console.print("[light_cyan3]Output gain:[/light_cyan3] auto (target ~-14 dB RMS)")
     console.print()
 
     if input_path is None:
@@ -165,24 +177,9 @@ def main(
             )
             progress.update(task, advance=1)
 
-        progress.update(task, advance=0, description="Mastering")
-        master = Pedalboard(
-            [
-                Gain(gain_db=0.5),
-                Compressor(threshold_db=-22.0, ratio=3.0, attack_ms=5.0, release_ms=80.0),
-                Limiter(threshold_db=-1.0, release_ms=80.0),
-            ]
-        )
-        processed = master.process(processed, samplerate)
-        progress.update(task, advance=1, description="Final limiting")
-
-        finalizer = Pedalboard(
-            [
-                Gain(gain_db=0.0),
-                Limiter(threshold_db=-1.0, release_ms=80.0),
-            ]
-        )
-        processed = finalizer.process(processed, samplerate)
+        progress.update(task, advance=0, description="Auto gain")
+        auto_gain_db = _auto_gain_db(processed)
+        processed = Gain(gain_db=auto_gain_db).process(processed, samplerate)
         progress.update(task, advance=1, description="Writing output")
 
         audiofile_kwargs = {}
